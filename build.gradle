@@ -1,0 +1,43 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceCompatibility = 1.8
+version = '1.0'
+
+jar
+{
+  manifest
+  {
+    attributes 'Implementation-Title': 'ATG - Chat Server',
+               'Implementation-Version': version
+  }
+}
+
+repositories
+{
+  mavenCentral()
+}
+
+dependencies
+{
+  // App dependencies 
+  compile group: 'com.sparkjava', name: 'spark-core', version: '2.5'
+  compile group: 'com.j2html', name: 'j2html', version: '0.7'
+  compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.13'
+  compile group: 'com.google.inject', name: 'guice', version: '4.0'
+  
+  // Test dependencies 
+  testCompile group: 'junit', name: 'junit', version: '4.+'
+  testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+  testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
+  testCompile group: 'info.cukes', name: 'cucumber-junit', version: '1.2.5'
+  testCompile group: 'info.cukes', name: 'cucumber-java', version: '1.2.5'
+  testCompile group: 'info.cukes', name: 'cucumber-guice', version: '1.2.5'
+  
+}
+
+test
+{
+  testLogging.showStandardStreams = true
+  systemProperties System.getProperties()
+}
