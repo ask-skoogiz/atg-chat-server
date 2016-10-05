@@ -54,9 +54,10 @@ public abstract class Chat
      *
      * @param message
      */
-    public void addMessage(Message message)
+    public Chat message(Message message)
     {
         getMessages().add(message);
+        return this;
     }
 
     /**

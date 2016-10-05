@@ -30,15 +30,6 @@ public interface ChatService
     Chat addMessage(Message message, User toUser);
 
     /**
-     * Add message to given {@link Chat}.
-     * 
-     * @param chat
-     * @param message
-     * @return
-     */
-    Chat addMessage(Chat chat, Message message);
-
-    /**
      * Save the given {@link User}.
      * 
      * @param user

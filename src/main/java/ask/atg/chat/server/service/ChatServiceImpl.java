@@ -60,7 +60,7 @@ public class ChatServiceImpl implements ChatService
             if (contact.isPresent())
             {
                 Optional<Chat> chat = chatDao.findBy(contact.get());
-                return addMessage(chat.isPresent() ? chat.get() : Chat.create(contact.get()), message);
+                return (chat.isPresent() ? chat.get() : Chat.create(contact.get()).message(message));
             }
             else
             {
@@ -75,13 +75,6 @@ public class ChatServiceImpl implements ChatService
         {
             throw new IllegalArgumentException("No user named '" + message.getAuthor() + "' exists.");
         }
-    }
-
-    @Override
-    public Chat addMessage(Chat chat, Message message)
-    {
-        chat.addMessage(message);
-        return chat;
     }
 
     @Override
