@@ -10,6 +10,8 @@ Feature: As an user I want to be able to create a unique user account so that I 
     And I have a new user
     When I create new user
     Then a user is not created
+    And user exists message is generated
+    
     
   Scenario: Fetch user with valid credentials
     Given a user exists

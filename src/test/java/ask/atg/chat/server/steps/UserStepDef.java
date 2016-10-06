@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;
 
+import ask.atg.chat.server.i18n.Messages;
 import ask.atg.chat.server.model.User;
 import ask.atg.chat.server.service.ChatService;
 
@@ -97,6 +98,13 @@ public class UserStepDef extends AbstractStepDef
         getUserHelper().prepare(ANOTHER_USERNAME, DEFAULT_PASSWORD);
     }
 
+    @Then("^user exists message is generated$")
+    public void error_message_is_generated() throws Throwable
+    {
+        assertThat("Messages is", expectedException.getMessage(), is(Messages.get("error.user.exists", user
+            .getUsername())));
+    }
+
     @Then("^a user is not created$")
     public void a_user_is_not_created()
     {
@@ -149,4 +157,5 @@ public class UserStepDef extends AbstractStepDef
     {
         assertThat("No user available", user, is(nullValue()));
     }
+
 }

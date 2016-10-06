@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import ask.atg.chat.server.i18n.Messages;
 import ask.atg.chat.server.model.Chat;
 import ask.atg.chat.server.model.Contact;
 
@@ -33,11 +34,9 @@ public class ChatCache implements ChatDao, Clearable
         }
         else
         {
-            throw new IllegalArgumentException("A chat between '" +
-                contact.fromUser().getUsername() +
-                "' and '" +
-                contact.toUser().getUsername() +
-                "' already exists.");
+            throw new IllegalArgumentException(Messages.get("error.chat.exists",
+                contact.fromUser().getUsername(),
+                contact.toUser().getUsername()));
         }
     }
 

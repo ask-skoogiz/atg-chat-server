@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import ask.atg.chat.server.i18n.Messages;
 import ask.atg.chat.server.model.Contact;
 import ask.atg.chat.server.model.Contact.Type;
 import ask.atg.chat.server.model.User;
@@ -39,11 +40,9 @@ public class ContactCache implements ContactDao, Clearable
         }
         else
         {
-            throw new IllegalArgumentException("Contact between '" +
-                contact.fromUser().getUsername() +
-                "' and '" +
-                contact.toUser().getUsername() +
-                "' already exists.");
+            throw new IllegalArgumentException(Messages.get("error.contact.exists",
+                contact.fromUser().getUsername(),
+                contact.toUser().getUsername()));
         }
     }
 
