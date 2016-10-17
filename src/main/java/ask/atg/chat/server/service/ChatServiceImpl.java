@@ -78,6 +78,18 @@ public class ChatServiceImpl implements ChatService
     }
 
     @Override
+    public Optional<Chat> findByChatId(String id)
+    {
+        return chatDao.findById(id);
+    }
+
+    @Override
+    public Optional<Chat> findByContact(Contact contact)
+    {
+        return chatDao.findBy(contact);
+    }
+
+    @Override
     public boolean exists(Contact contact)
     {
         return chatDao.exists(contact);

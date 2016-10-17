@@ -128,4 +128,19 @@ public interface ChatService
      */
     Optional<User> findByName(String username);
 
+    /**
+     * Find {@link Chat} by given {@link Contact}.
+     * 
+     * @param contact
+     * @return
+     */
+    Optional<Chat> findByContact(Contact contact);
+
+    /**
+     * Find {@link Chat} by given id.
+     * 
+     * @param contact
+     * @return
+     */
+    Optional<Chat> findByChatId(String id);
 }
