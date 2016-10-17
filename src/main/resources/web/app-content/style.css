@@ -49,6 +49,6 @@ body {
 }
 
 .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
-    background-color: #1b809e;
-    border-color: #1b809e;
+  background-color: #1b809e;
+  border-color: #1b809e;
 }

@@ -1,30 +1,30 @@
 (function () {
-    'use strict';
+  'use strict';
 
-    angular
-        .module('app')
-        .controller('Register.IndexController', Controller);
+  angular
+  .module('app')
+  .controller('Register.IndexController', Controller);
 
-    function Controller($location, AuthenticationService) {
-        var vm = this;
+  function Controller($location, AuthenticationService) {
+    var vm = this;
 
-        vm.register = register;
+    vm.register = register;
 
-        initController();
+    initController();
 
-        function initController() {
-        }
-
-        function register() {
-          vm.loading = true;
-          AuthenticationService.Register(vm.username, vm.password, function (result) {
-              if (result.success === true) {
-                  $location.path('/');
-              } else {
-                  vm.error = result.msg;
-                  vm.loading = false;
-              }
-          });
-        };
+    function initController() {
     }
+
+    function register() {
+      vm.loading = true;
+      AuthenticationService.Register(vm.username, vm.password, function (result) {
+        if (result.success === true) {
+          $location.path('/');
+        } else {
+          vm.error = result.msg;
+          vm.loading = false;
+        }
+      });
+    };
+  }
 })();

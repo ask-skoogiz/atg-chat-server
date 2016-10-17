@@ -18,7 +18,7 @@
         vm.ws.close()
       }
     });
-
+    
     service.connect = function (onConnect, onDisconnect, onInfo) {
       if (!exists()) {
         websocket(onConnect, onDisconnect);
@@ -43,18 +43,18 @@
     }
 
     service.getChat = getChat;
-    
+
     function getChat(from, to, callback) {
-        $http.get("/api/getChat/"+from+"/"+to)
-            .success(function (response) {
-                if (response.chat_id) {
-                    callback(true, response);
-                } else {
-                    callback(false);
-                }
-            });
+      $http.get("/api/getChat/"+from+"/"+to)
+      .success(function (response) {
+        if (response.chat_id) {
+          callback(true, response);
+        } else {
+          callback(false);
+        }
+      });
     }
-    
+
     function sendRequest(request) {
       var defer = $q.defer();
       var callbackId = generateUUID();
