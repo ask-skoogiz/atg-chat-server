@@ -19,4 +19,6 @@ public interface ChatDao extends Dao<Chat>
     boolean exists(Contact contact);
 
     Optional<Chat> findBy(Contact contact);
+
+    Optional<Chat> findById(String chatId);
 }

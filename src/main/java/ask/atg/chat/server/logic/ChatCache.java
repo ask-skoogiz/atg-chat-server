@@ -69,6 +69,15 @@ public class ChatCache implements ChatDao, Clearable
     }
 
     @Override
+    public Optional<Chat> findById(String chatId)
+    {
+        return cache
+            .stream()
+            .filter((chat) -> chat.getId().equals(chatId))
+            .findAny();
+    }
+
+    @Override
     public void clear()
     {
         cache.clear();
