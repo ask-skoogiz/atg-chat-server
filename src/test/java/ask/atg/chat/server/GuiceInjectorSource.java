@@ -22,6 +22,6 @@ public class GuiceInjectorSource implements InjectorSource
     @Override
     public Injector getInjector()
     {
-        return Guice.createInjector(Stage.DEVELOPMENT, CucumberModules.SCENARIO, new GuiceModule());
+        return Guice.createInjector(Stage.DEVELOPMENT, CucumberModules.SCENARIO, new ChatModule());
     }
 }
