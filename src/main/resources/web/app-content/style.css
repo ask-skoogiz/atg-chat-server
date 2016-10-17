@@ -1,0 +1,54 @@
+body {
+  padding-top: 50px;
+  padding-bottom: 20px;
+}
+
+.help-block {
+  font-size: 12px;
+}
+
+.highlight {
+  color: #1b809e;
+}
+
+.jumbotron {
+  padding-bottom: 1.5em;
+  padding-top: 1.5em;
+}
+
+#message-form {
+  margin-bottom: 10px;
+}
+
+#chat p {
+  margin: 5px 0;
+  font-weight: 300
+}
+
+#chat .timestamp {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+#chat article {
+  padding: 10px;
+  margin-bottom: 10px;
+  position: relative;
+  word-wrap: break-word;
+}
+
+#chat article.user-you {
+  border-radius: 0 10px 10px;
+  background: #d7f2d2;
+}
+
+#chat article.user-contact {
+  border-radius: 10px 0 10px 10px;
+  background: #ceede3;
+}
+
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1b809e;
+    border-color: #1b809e;
+}

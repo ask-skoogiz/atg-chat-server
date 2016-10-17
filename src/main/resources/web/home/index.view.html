@@ -1,0 +1,53 @@
+<div class="jumbotron">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+        <h1><span class="highlight">{{vm.user}}</span></h1>
+        <p>Welcome to the ATG chat server.</p>
+      </div>
+      <div class="col-md-4">
+        <div ng-switch="status" class="text-right text-uppercase">
+          <span ng-switch-when="0" class="label label-warning">Connecting</span>
+          <span ng-switch-when="1" class="label label-success">Open</span>
+          <span ng-switch-when="2" class="label label-warning">Closing</span>
+          <span ng-switch-when="3" class="label label-danger">Closed</span>
+          <span ng-switch-default class="label label-default">No connection</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Example row of columns -->
+  <div class="row">
+    <div class="col-md-3">
+    <form ng-submit="send()">
+      <div id="message-form" class="input-group">
+        <input id="message" ng-model="msg" type="text" class="form-control" laceholder="Type your message...">
+        <span class="input-group-btn">
+          <button id="send" class="btn btn-default" type="submit">Send</button>
+        </span>
+      </div>
+    </form>  
+    </div>
+    <div class="col-md-6">
+      <div id="chat">
+        <article ng-repeat="msg in messages" ng-class="vm.user == msg.from ? 'user-you' : 'user-contact'">
+          <b class="small">{{vm.user == msg.from ? 'You' : msg.from}}:</b>
+          <span class="small timestamp">{{msg.timestamp | date: "HH:mm"}}</span>
+          <p>{{msg.text}}</p>
+        </article>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="list-group">
+        <a href="#"
+           ng-class="{active:user.contact==selectedContact}"
+           class="list-group-item"
+           ng-click="selectContact(user.contact)"
+           ng-repeat="user in users">{{user.contact}}</a>
+      </div>
+    </div>
+  </div>
+</div>

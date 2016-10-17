@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+  <title>ATG : Chat</title>
+
+  <!-- bootstrap css -->
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- application css -->
+  <link href="app-content/style.css" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav ng-controller="NavController as nav" class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button ng-show="nav.loggedIn" type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">ATG</a>
+      </div>
+
+      <div id="navbar" class="collapse navbar-collapse">
+        <ul ng-show="nav.loggedIn" class="nav navbar-nav navbar-right">
+          <li><a href="#/login">Sign out&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></a></li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div>
+  </nav>
+
+  <!-- main app container -->
+  <ui-view></ui-view>
+
+  <hr>
+
+  <!-- footer -->
+  <footer class="text-center">
+    <p>Anders Skoglund</p>
+  </footer>
+
+  <!-- angular scripts -->
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-messages.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.18/angular-ui-router.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.6/ngStorage.min.js"></script>
+
+  <!-- bootstrap scripts -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+  <!-- application scripts -->
+  <script src="app.js"></script>
+  <script src="app-services/authentication.service.js"></script>
+  <script src="app-services/chat.service.js"></script>
+  <script src="home/index.controller.js"></script>
+  <script src="register/index.controller.js"></script>
+  <script src="login/index.controller.js"></script>
+
+</body>
+</html>
