@@ -39,6 +39,22 @@ dependencies
   
 }
 
+// Task creates a single Jar with all dependencies.
+task distJar(type: Jar) {
+  manifest
+  {
+    attributes 'Implementation-Title': 'ATG Chat server with dist',
+               'Implementation-Version': version,
+               'Main-Class': 'ask.atg.chat.server.Server'
+  }
+  baseName = project.name + '-all'
+  from
+  { 
+    configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+  }
+  with jar
+}
+
 test
 {
   testLogging.showStandardStreams = true
