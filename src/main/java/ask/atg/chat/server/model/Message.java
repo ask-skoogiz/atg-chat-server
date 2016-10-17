@@ -43,6 +43,20 @@ public interface Message
      */
     public static Message create(final User author, final String msg)
     {
+        return create(author.getUsername(), msg);
+    }
+
+    /**
+     * Factory method to construct a {@link Message}.
+     * 
+     * @param author
+     * @param msg
+     * @return the new {@link Message}
+     */
+    public static Message create(final String author, final String msg)
+    {
+        final Date date = new Date();
+
         return new Message()
         {
             @Override
@@ -54,15 +68,14 @@ public interface Message
             @Override
             public Date getDate()
             {
-                return new Date();
+                return date;
             }
 
             @Override
             public String getAuthor()
             {
-                return author.getUsername();
+                return author;
             }
         };
     }
-
 }
