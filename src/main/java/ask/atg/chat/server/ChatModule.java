@@ -14,10 +14,8 @@ import ask.atg.chat.server.service.ChatServiceImpl;
 
 import com.google.inject.AbstractModule;
 
-import cucumber.runtime.java.guice.InjectorSource;
-
 /**
- * Guice {@link InjectorSource} for dependency injection while testing the chat server implementation.
+ * Guice for dependency injection while testing the chat server implementation.
  * 
  * @author Anders Skoglund
  *
