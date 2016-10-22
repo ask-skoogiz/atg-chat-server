@@ -11,7 +11,7 @@ import ask.atg.chat.server.json.JsonBean;
  * @author Anders Skoglund
  *
  */
-public class UserJson implements JsonBean
+public class JsonUser implements JsonBean
 {
 
     public String id;
@@ -20,11 +20,11 @@ public class UserJson implements JsonBean
 
     public String password;
 
-    public UserJson()
+    public JsonUser()
     {
     }
 
-    public UserJson(String id, String username, String password)
+    public JsonUser(String id, String username, String password)
     {
         super();
         this.id = id;

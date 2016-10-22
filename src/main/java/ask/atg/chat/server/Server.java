@@ -25,8 +25,8 @@ import org.slf4j.LoggerFactory;
 
 import ask.atg.chat.server.i18n.Messages;
 import ask.atg.chat.server.json.JsonParser;
-import ask.atg.chat.server.json.model.MessageJson;
-import ask.atg.chat.server.json.model.UserJson;
+import ask.atg.chat.server.json.model.JsonMessage;
+import ask.atg.chat.server.json.model.JsonUser;
 import ask.atg.chat.server.model.Chat;
 import ask.atg.chat.server.model.Contact;
 import ask.atg.chat.server.model.Message;
@@ -143,7 +143,7 @@ public class Server
 
         post("/api/register", (request, response) -> {
 
-            Optional<UserJson> json = JsonParser.fromJson(request.body(), UserJson.class);
+            Optional<JsonUser> json = JsonParser.fromJson(request.body(), JsonUser.class);
 
             JSONObject result = new JSONObject();
 
@@ -315,7 +315,7 @@ public class Server
         {
             JSONObject j = new JSONObject(message);
 
-            Optional<MessageJson> msg = JsonParser.fromJson(j.getString("message"), MessageJson.class);
+            Optional<JsonMessage> msg = JsonParser.fromJson(j.getString("message"), JsonMessage.class);
 
             if (msg.isPresent())
             {

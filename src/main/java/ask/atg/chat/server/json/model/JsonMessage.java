@@ -11,7 +11,7 @@ import ask.atg.chat.server.json.JsonBean;
  * @author Anders Skoglund
  *
  */
-public class MessageJson implements JsonBean
+public class JsonMessage implements JsonBean
 {
 
     public String from, to;
@@ -22,11 +22,11 @@ public class MessageJson implements JsonBean
 
     public String chat_id;
 
-    public MessageJson()
+    public JsonMessage()
     {
     }
 
-    public MessageJson(String from, String text, Long timestamp)
+    public JsonMessage(String from, String text, Long timestamp)
     {
         this.from = from;
         this.text = text;

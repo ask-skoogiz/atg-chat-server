@@ -6,7 +6,7 @@ package ask.atg.chat.server.model;
 import java.util.UUID;
 
 import ask.atg.chat.server.json.JsonMorphable;
-import ask.atg.chat.server.json.model.UserJson;
+import ask.atg.chat.server.json.model.JsonUser;
 
 /**
  * Abstract model of a User of the chat server.
@@ -97,18 +97,18 @@ public abstract class User implements JsonMorphable
      * @param username
      * @return
      */
-    public static User create(final UserJson json)
+    public static User create(final JsonUser json)
     {
         return create(json.username, json.password);
     }
 
     /**
-     * Create a {@link User} from a {@link UserJson} bean.
+     * Create a {@link User} from a {@link JsonUser} bean.
      * 
      * @param json
      * @return
      */
-    public static User fromJson(final UserJson json)
+    public static User fromJson(final JsonUser json)
     {
         return new User()
         {
@@ -134,9 +134,9 @@ public abstract class User implements JsonMorphable
     }
 
     @Override
-    public UserJson toJson()
+    public JsonUser toJson()
     {
-        return new UserJson(getId(), getUsername(), getPassword());
+        return new JsonUser(getId(), getUsername(), getPassword());
     }
 
 }

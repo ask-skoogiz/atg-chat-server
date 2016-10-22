@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ask.atg.chat.server.Server;
-import ask.atg.chat.server.json.model.UserJson;
+import ask.atg.chat.server.json.model.JsonUser;
 import ask.atg.chat.server.model.User;
 
 public class JsonTest
@@ -35,7 +35,7 @@ public class JsonTest
                     DEFAULT_USERNAME,
                     DEFAULT_PASSWORD);
 
-        Optional<UserJson> jsonOptional = JsonParser.fromJson(json, UserJson.class);
+        Optional<JsonUser> jsonOptional = JsonParser.fromJson(json, JsonUser.class);
         assertTrue(jsonOptional.isPresent());
 
         User user = User.fromJson(jsonOptional.get());
@@ -49,7 +49,7 @@ public class JsonTest
         assertTrue(resultJson.isPresent());
         logger.info(resultJson.get());
 
-        List<UserJson> users =
+        List<JsonUser> users =
                 Arrays.asList(user.toJson(), anotherUser.toJson(), User.create(
                     YET_ANOTHER_USERNAME,
                     DEFAULT_PASSWORD).toJson());
