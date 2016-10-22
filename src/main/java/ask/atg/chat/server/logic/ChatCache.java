@@ -3,15 +3,16 @@
  */
 package ask.atg.chat.server.logic;
 
+import static ask.atg.chat.server.i18n.Errors.newIllegalArgumentException;
+
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import ask.atg.chat.server.i18n.Messages;
+import com.google.inject.Singleton;
+
 import ask.atg.chat.server.model.Chat;
 import ask.atg.chat.server.model.Contact;
-
-import com.google.inject.Singleton;
 
 /**
  * 
@@ -34,9 +35,10 @@ public class ChatCache implements ChatDao, Clearable
         }
         else
         {
-            throw new IllegalArgumentException(Messages.get("error.chat.exists",
+            throw newIllegalArgumentException(
+                "error.chat.exists",
                 contact.fromUser().getUsername(),
-                contact.toUser().getUsername()));
+                contact.toUser().getUsername());
         }
     }
 

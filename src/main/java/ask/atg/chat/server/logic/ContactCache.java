@@ -3,18 +3,19 @@
  */
 package ask.atg.chat.server.logic;
 
+import static ask.atg.chat.server.i18n.Errors.newIllegalArgumentException;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import ask.atg.chat.server.i18n.Messages;
+import com.google.inject.Singleton;
+
 import ask.atg.chat.server.model.Contact;
 import ask.atg.chat.server.model.Contact.Type;
 import ask.atg.chat.server.model.User;
-
-import com.google.inject.Singleton;
 
 /**
  * 
@@ -40,9 +41,10 @@ public class ContactCache implements ContactDao, Clearable
         }
         else
         {
-            throw new IllegalArgumentException(Messages.get("error.contact.exists",
+            throw newIllegalArgumentException(
+                "error.contact.exists",
                 contact.fromUser().getUsername(),
-                contact.toUser().getUsername()));
+                contact.toUser().getUsername());
         }
     }
 
@@ -65,7 +67,8 @@ public class ContactCache implements ContactDao, Clearable
         return cache
             .stream()
             .filter((contact) -> contact.isBetween(user, anotherUser))
-            .findFirst().isPresent();
+            .findFirst()
+            .isPresent();
     }
 
     public void update(Contact contact)

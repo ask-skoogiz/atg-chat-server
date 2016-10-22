@@ -3,8 +3,13 @@
  */
 package ask.atg.chat.server.service;
 
+import static ask.atg.chat.server.i18n.Errors.newIllegalArgumentException;
+
 import java.util.Collection;
 import java.util.Optional;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ask.atg.chat.server.logic.ChatDao;
 import ask.atg.chat.server.logic.ContactDao;
@@ -13,9 +18,6 @@ import ask.atg.chat.server.model.Chat;
 import ask.atg.chat.server.model.Contact;
 import ask.atg.chat.server.model.Message;
 import ask.atg.chat.server.model.User;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 /**
  * Service facade for managing chat functionality.
@@ -51,30 +53,20 @@ public class ChatServiceImpl implements ChatService
     }
 
     @Override
-    public Chat addMessage(Message message, User toUser) throws IllegalArgumentException
+    public Chat addMessage(final Message message, final User toUser) throws IllegalArgumentException
     {
-        Optional<User> author = userDao.findByName(message.getAuthor());
-        if (author.isPresent())
-        {
-            Optional<Contact> contact = contactDao.findMutual(author.get(), toUser);
-            if (contact.isPresent())
-            {
-                Optional<Chat> chat = chatDao.findBy(contact.get());
-                return (chat.isPresent() ? chat.get() : Chat.create(contact.get()).message(message));
-            }
-            else
-            {
-                throw new IllegalArgumentException("Users '" +
-                    message.getAuthor() +
-                    "' and '" +
-                    toUser.getUsername() +
-                    "' are not contacts.");
-            }
-        }
-        else
-        {
-            throw new IllegalArgumentException("No user named '" + message.getAuthor() + "' exists.");
-        }
+        User author =
+                userDao.findByName(message.getAuthor()).orElseThrow(
+                    () -> newIllegalArgumentException("error.user.notexisting", message.getAuthor()));
+
+        Contact contact =
+                contactDao.findMutual(author, toUser).orElseThrow(
+                    () -> newIllegalArgumentException(
+                        "error.contact.notexisting",
+                        message.getAuthor(),
+                        toUser.getUsername()));
+
+        return chatDao.findBy(contact).orElseGet(() -> Chat.create(contact).message(message));
     }
 
     @Override
