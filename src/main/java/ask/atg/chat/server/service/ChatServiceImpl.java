@@ -47,9 +47,16 @@ public class ChatServiceImpl implements ChatService
      */
 
     @Override
-    public void save(Chat chat) throws Exception
+    public void save(Chat chat)
     {
-        chatDao.save(chat);
+        try
+        {
+            chatDao.save(chat);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override
@@ -92,9 +99,17 @@ public class ChatServiceImpl implements ChatService
      */
 
     @Override
-    public void save(Contact contact) throws Exception
+    public void save(Contact contact)
     {
-        contactDao.save(contact);
+        try
+        {
+            contactDao.save(contact);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e.getMessage());
+        }
+
     }
 
     @Override

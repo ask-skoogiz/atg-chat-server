@@ -43,7 +43,7 @@ public interface ChatService
      * @param user
      * @throws Exception
      */
-    void save(Contact contact) throws Exception;
+    void save(Contact contact);
 
     /**
      * Save the given {@link Chat}.
@@ -51,7 +51,7 @@ public interface ChatService
      * @param user
      * @throws Exception
      */
-    void save(Chat chat) throws Exception;
+    void save(Chat chat);
 
     /**
      * Login with a given user and retrieve user info.

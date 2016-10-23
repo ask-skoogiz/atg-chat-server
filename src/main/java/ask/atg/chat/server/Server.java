@@ -23,6 +23,9 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 import ask.atg.chat.server.i18n.Messages;
 import ask.atg.chat.server.json.JsonParser;
 import ask.atg.chat.server.json.model.JsonMessage;
@@ -35,13 +38,10 @@ import ask.atg.chat.server.service.ChatService;
 import ask.atg.chat.server.service.ChatServiceImpl;
 import ask.atg.chat.server.service.JWTFactory;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-
 /**
  * Startup class for the chat server.
  * 
- * TODO: Move all JSON generation to a separate file. TODO: Take a closer look on all the ifs.
+ * TODO: Move all JSON generation to a separate file.
  * 
  * @author Anders Skoglund
  *
@@ -53,19 +53,18 @@ public class Server
 
     // TODO: This kind of data would fit better in a fast db like Redis.
     static Map<Session, String> userUsernameMap = new HashMap<>();
+
     static Map<String, User> onlineUsers = new HashMap<>();
 
     // Guice Injector for dependency injection.
-    private static Injector injector = Guice.createInjector(new ChatModule());
+    private static Injector injector;
 
-    /**
-     * Getter to fetch an instance of {@link ChatService}.
-     * 
-     * @return
-     */
-    public static ChatService getService()
+    private static ChatService chatService;
+
+    static
     {
-        return injector.getInstance(ChatServiceImpl.class);
+        injector = Guice.createInjector(new ChatModule());
+        chatService = injector.getInstance(ChatServiceImpl.class);
     }
 
     /**
@@ -76,8 +75,6 @@ public class Server
     public static void main(String... args)
     {
         // Inject ChatService with Guice
-
-        ChatService chatService = getService();
 
         final JWTFactory jwtFactory = JWTFactory.get();
 
@@ -98,37 +95,33 @@ public class Server
             final String from = request.params(":from");
             final String to = request.params(":to");
 
-            Optional<User> fromUser = chatService.findByName(from);
-            Optional<User> toUser = chatService.findByName(to);
+            Optional<User> fromOptional = chatService.findByName(from);
+            Optional<User> toOptional = chatService.findByName(to);
 
             JSONObject result = new JSONObject();
 
-            if (fromUser.isPresent() && toUser.isPresent())
+            if (fromOptional.isPresent() && toOptional.isPresent())
             {
-                Optional<Contact> contactOpt = chatService.findMutual(fromUser.get(), toUser.get());
-                Contact contact;
-                if (contactOpt.isPresent())
-                {
-                    contact = contactOpt.get();
-                }
-                else
-                {
-                    contact = Contact.create(fromUser.get(), toUser.get()).replace(
-                        Contact.Type.MUTUAL);
-                    chatService.save(contact);
-                }
+                User fromUser = fromOptional.get();
+                User toUser = toOptional.get();
 
-                Optional<Chat> chatOpt = chatService.findByContact(contact);
-                Chat chat;
-                if (chatOpt.isPresent())
-                {
-                    chat = chatOpt.get();
-                }
-                else
-                {
-                    chat = Chat.create(contact);
-                    chatService.save(chat);
-                }
+                Contact contact = chatService
+                    .findMutual(fromUser, toUser)
+                    .orElseGet(() -> {
+                        Contact newCcontact = Contact
+                            .create(fromUser, toUser)
+                            .replace(Contact.Type.MUTUAL);
+                        chatService.save(newCcontact);
+                        return newCcontact;
+                    });
+
+                Chat chat = chatService
+                    .findByContact(contact)
+                    .orElseGet(() -> {
+                        Chat newChat = Chat.create(contact);
+                        chatService.save(newChat);
+                        return newChat;
+                    });
 
                 result.put("chat_id", chat.getId());
                 result.put("messages", getMessages(chat));
@@ -143,27 +136,12 @@ public class Server
 
         post("/api/register", (request, response) -> {
 
-            Optional<JsonUser> json = JsonParser.fromJson(request.body(), JsonUser.class);
+            Optional<JsonUser> credentials = JsonParser.fromJson(request.body(), JsonUser.class);
 
-            JSONObject result = new JSONObject();
-
-            if (json.isPresent())
-            {
-                try
-                {
-                    chatService.save(User.create(json.get()));
-                    result.put("success", true);
-
-                }
-                catch (IllegalArgumentException e)
-                {
-                    result.put("msg", e.getMessage());
-                }
-            }
-            else
-            {
-                result.put("success", false);
-            }
+            JSONObject result = credentials
+                .map(User::create)
+                .map(user -> registerNewUser(user))
+                .orElse(createSimpleJsonObject("success", false));
 
             response.status(200);
             response.type("application/json");
@@ -181,20 +159,37 @@ public class Server
             response.status(200);
             response.type("application/json");
 
-            JSONObject token = new JSONObject();
-
-            Optional<User> existingUser = chatService.login(username, password);
-
-            if (existingUser.isPresent())
-            {
-                User user = existingUser.get();
-                token.put("token", jwtFactory.createToken(user));
-                onlineUsers.put(username, user);
-            }
+            JSONObject token = chatService
+                .login(username, password)
+                .map((user) -> {
+                    JSONObject json = createSimpleJsonObject("token", jwtFactory.createToken(user));
+                    onlineUsers.put(username, user);
+                    return json;
+                })
+                .orElse(new JSONObject());
 
             return String.valueOf(token);
         });
 
+    }
+
+    /**
+     * Create a JSON response when trying to register a new user.
+     * 
+     * @param user
+     * @return
+     */
+    private static JSONObject registerNewUser(User user)
+    {
+        try
+        {
+            chatService.save(user);
+            return createSimpleJsonObject("success", true);
+        }
+        catch (Exception e)
+        {
+            return createSimpleJsonObject("msg", e.getMessage());
+        }
     }
 
     /**
@@ -205,7 +200,8 @@ public class Server
      */
     private static Collection<JSONObject> getMessages(Chat chat)
     {
-        return chat.getMessagesChronological(false)
+        return chat
+            .getMessagesChronological(false)
             .stream()
             .map(msg -> {
 
@@ -254,8 +250,7 @@ public class Server
                         String.valueOf(new JSONObject()
                             .put("type", type)
                             .put("message", createUserMessage(type, sender, message))
-                            .put("userlist", createContacts(session))
-                            ));
+                            .put("userlist", createContacts(session))));
                 }
                 catch (Exception e)
                 {
@@ -265,71 +260,28 @@ public class Server
     }
 
     /**
-     * Create contacts.
-     * 
-     * @param sender
-     * @param message
-     * @return
-     * @throws JSONException
-     */
-    private static Collection<JSONObject> createContacts(Session session)
-    {
-        return new LinkedHashSet<String>(userUsernameMap.values()).stream().filter(
-            name -> !userUsernameMap.get(session).equals(name)).map(
-            name -> createContact(name)).collect(
-            Collectors.toSet());
-    }
-
-    /**
-     * Create contacts.
-     * 
-     * @param sender
-     * @param message
-     * @return
-     * @throws JSONException
-     */
-    private static JSONObject createContact(String name)
-    {
-        JSONObject contact = new JSONObject();
-        try
-        {
-            contact.put("contact", name);
-        }
-        catch (JSONException e)
-        {
-            logger.error(e.getMessage(), e);
-        }
-        return contact;
-    }
-
-    /**
      * Broadcast a message to the members of a given chat.
      * 
      * @param message
      */
     public static void broadcastMessage(String message)
     {
-        ChatService chatService = getService();
-
         try
         {
-            JSONObject j = new JSONObject(message);
 
-            Optional<JsonMessage> msg = JsonParser.fromJson(j.getString("message"), JsonMessage.class);
+            Optional<JsonMessage> msgOpt =
+                    JsonParser.fromJson(new JSONObject(message).getString("message"), JsonMessage.class);
 
-            if (msg.isPresent())
-            {
-                Optional<Chat> chat = chatService.findByChatId(msg.get().chat_id);
-
-                if (chat.isPresent())
-                {
-                    chat.get().message(Message.create(msg.get().from, msg.get().text));
+            msgOpt.ifPresent((msg) -> {
+                Optional<Chat> chatOpt = chatService.findByChatId(msg.chat_id);
+                chatOpt.ifPresent((chat) -> {
+                    chat.message(Message.create(msg.from, msg.text));
                     userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(
                         session -> {
                             try
                             {
-                                if (userUsernameMap.get(session).equals(msg.get().from) ||
-                                    userUsernameMap.get(session).equals(msg.get().to))
+                                if (userUsernameMap.get(session).equals(msg.from) ||
+                                    userUsernameMap.get(session).equals(msg.to))
                                 {
                                     session.getRemote().sendString(
                                         String.valueOf(createJsonMessageFromSender(message)));
@@ -340,8 +292,8 @@ public class Server
                                 logger.error(e.getMessage(), e);
                             }
                         });
-                }
-            }
+                });
+            });
 
         }
         catch (JSONException e)
@@ -387,5 +339,64 @@ public class Server
         messageObject.put("message", content);
 
         return messageObject;
+    }
+
+    /**
+     * Create contacts.
+     * 
+     * @param sender
+     * @param message
+     * @return
+     * @throws JSONException
+     */
+    private static Collection<JSONObject> createContacts(Session session)
+    {
+        return new LinkedHashSet<String>(userUsernameMap.values())
+            .stream()
+            .filter(name -> !userUsernameMap.get(session).equals(name))
+            .map(name -> createSimpleJsonObject("contact", name))
+            .collect(Collectors.toSet());
+    }
+
+    /**
+     * Create a JSON object with a single String value field.
+     * 
+     * @param field
+     * @param value
+     * @return
+     */
+    private static JSONObject createSimpleJsonObject(String field, String value)
+    {
+        JSONObject contact = new JSONObject();
+        try
+        {
+            contact.put(field, value);
+        }
+        catch (JSONException e)
+        {
+            logger.error(e.getMessage(), e);
+        }
+        return contact;
+    }
+
+    /**
+     * Create a JSON object with a single boolean value field.
+     * 
+     * @param field
+     * @param value
+     * @return
+     */
+    private static JSONObject createSimpleJsonObject(String field, boolean value)
+    {
+        JSONObject contact = new JSONObject();
+        try
+        {
+            contact.put(field, value);
+        }
+        catch (JSONException e)
+        {
+            logger.error(e.getMessage(), e);
+        }
+        return contact;
     }
 }
